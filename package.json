@@ -1,0 +1,11 @@
+{
+  "name": "@grunmouse/equation-engine",
+  "version": "0.0.1",
+  "description": "Простой как пробка движок выражений, настраиваемый конфигом.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
