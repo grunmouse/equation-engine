@@ -13,7 +13,7 @@ function createParser(operators, functions, values, names){
 	const lexer = createLexer(operators, functions, values, names);
 	
 	return function(equation){
-		let tokens = lexer(samples[5]);
+		let tokens = lexer(equation);
 		let commands = unconflict(tokens);
 		let poliz = shuntingYard(commands);
 		return poliz;

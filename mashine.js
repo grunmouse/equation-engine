@@ -3,7 +3,7 @@ function createMashine(commands, getVariable, valueParsers={}){
 		const stack = [];
 		for(let item of poliz){
 			switch(item.token){
-				case 'literal':
+				case 'literal':{
 					let value = item.value;
 					if(value === undefined){
 						let parse = valueParsers[item.type];
@@ -11,30 +11,56 @@ function createMashine(commands, getVariable, valueParsers={}){
 					}
 					stack.push(value);
 					break;
-				case 'variable':
+				}
+				case 'variable':{
 					let value = getVariable(item.name);
 					stack.push(value);
 					break;
-				case 'function':
+				}
+				case 'function':{
 					let arity = item.arity;
 					let args = stack.splice(-arity, arity);
-					let fun = commands[item.name];
+					let funname = item.name;
+					let fun = commands[funname];
 					if(!fun){
-						throw new Error(`Unknown function "${item.name}"`);
+						throw new Error(`Unknown function "${funname}"`);
 					}
-					let value = fun(...arity);
+					let value;
+					try{
+						value = fun(...args);
+					}
+					catch(e){
+						let ne = new Error(`Error in ${funname}(${JSON.stringify(args)})`);
+						ne.stack = e.stack;
+						ne.originalError = e;
+						ne.args = args;
+						throw ne;
+					}
 					stack.push(value);
 					break;
-				case 'operator':
+				}
+				case 'operator':{
 					let arity = item.arity;
 					let args = stack.splice(-arity, arity);
-					let fun = commands[item.com];
+					let funname = item.com;
+					let fun = commands[funname];
 					if(!fun){
-						throw new Error(`Unknown operator "${item.com}"`);
+						throw new Error(`Unknown operator "${funname}"`);
 					}
-					let value = fun(...arity);
+					let value;
+					try{
+						value = fun(...args);
+					}
+					catch(e){
+						let ne = new Error(`Error in ${funname}(${JSON.stringify(args)})`);
+						ne.stack = e.stack;
+						ne.originalError = e;
+						ne.args = args;
+						throw ne;
+					}
 					stack.push(value);
 					break;
+				}
 				default:
 					throw new Error(`Unknown command type "${item.token}"`);
 			}

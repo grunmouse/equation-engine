@@ -169,7 +169,7 @@ function createLexer(operators, functions, values, names){
 
 	functions = ensureFunctions(functions);
 
-	const lexPattern = [valuesPattern, names, ...operSigns, /\(|\)|,/].map(a=>(a.source || a)).join('|');
+	const lexPattern = [valuesPattern, names, ...operSigns, /\(|\)|,/].map(a=>(a.source || a)).filter(a=>(!!a)).join('|');
 
 	return doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, functions);
 }

@@ -18,7 +18,6 @@ function tokenType(token){
 
 
 function unconflict(tokens){
-console.log('aaa');
 	for(let i = 0; i<tokens.length; ++i){
 		let token = tokens[i];
 		if(token.token === 'operator'){
