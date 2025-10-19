@@ -4,7 +4,7 @@ function tokenType(token){
 		if(token.token === 'operator'){
 			return token.fix;
 		}
-		else if(token.token === 'operator' || token.token === 'variable'){
+		else if(token.token === 'literal' || token.token === 'variable'){
 			return 'value';
 		}
 		else{

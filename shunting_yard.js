@@ -39,6 +39,7 @@ function shuntingYard(tokens){
 			}
 		}
 		else if(token.token === "open"){
+			token.arity = 1;
 			stack.push(token);
 		}
 		else if(token.token === "close"){
@@ -48,9 +49,18 @@ function shuntingYard(tokens){
 			if(stack.top().token !== "open"){
 				throw new Error("Unpaired brackets");
 			}
+			let arity = stack.top().arity;
 			stack.pop();
 			while(stack.top().token === "function"){
-				output.push(stack.pop());
+				let func = stack.pop();
+				if(func.arity == -1){
+					func.arity = arity;
+				}
+				if(func.arity != arity){
+					throw new Error('Incorrect arity of function '+ func.name);
+				}
+				output.push(func);
+				arity = 1;
 			}
 		}
 		else if(token.token === "colon"){

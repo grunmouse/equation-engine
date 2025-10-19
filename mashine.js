@@ -5,6 +5,7 @@ function createMashine(commands, getVariable, valueParsers={}){
 			switch(item.token){
 				case 'literal':{
 					let value = item.value;
+						debugger;
 					if(value === undefined){
 						let parse = valueParsers[item.type];
 						value = parse && parse(item.str);

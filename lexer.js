@@ -17,7 +17,7 @@ function doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, fu
 					let found = re.exec(token);
 					if(found && found[0] === token){
 						type = t;
-						value = fun ? fun(token) : token;
+						value = fun && fun(token);
 					}
 				}
 				tokens[i] = {token:'literal', str:token, value, type};
@@ -28,11 +28,11 @@ function doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, fu
 				if(token in operHandle){
 					let handle = operHandle[token];
 					if(handle.type === 'simple'){
-						tokens[i] = handle.oper;
+						tokens[i] = {...handle.oper};
 						operand = oper.fix === 'postfix';
 					}
 					else{
-						tokens[i] = {token:'operator', sign:token, fix:handle.type, config:handle}
+						tokens[i] = {token:'operator', sign:token, fix:handle.type, config:handle};
 					}
 				}
 				else if(token in functions){
@@ -61,7 +61,7 @@ function doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, fu
 				else if(token in operHandle){
 					let handle = operHandle[token];
 					if(handle.type === 'simple'){
-						tokens[i] = handle.oper;
+						tokens[i] = {...handle.oper};
 						operand = tokens[i].fix === 'postfix';
 					}
 					else{
@@ -168,8 +168,10 @@ function createLexer(operators, functions, values, names){
 	}
 
 	functions = ensureFunctions(functions);
+	
+	let functionNames = Object.keys(functions).filter(funname=>(!isName.test(funname)));
 
-	const lexPattern = [valuesPattern, names, ...operSigns, /\(|\)|,/].map(a=>(a.source || a)).filter(a=>(!!a)).join('|');
+	const lexPattern = [valuesPattern, names, ...operSigns, ...functionNames, /\(|\)|,/].map(a=>(a.source || a)).filter(a=>(!!a)).join('|');
 
 	return doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, functions);
 }
