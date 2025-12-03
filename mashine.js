@@ -1,20 +1,24 @@
 function createMashine(commands, getVariable, valueParsers={}){
-	return function(poliz){
+	return function(poliz, env){
 		const stack = [];
 		for(let item of poliz){
 			switch(item.token){
 				case 'literal':{
 					let value = item.value;
-						debugger;
-					if(value === undefined){
-						let parse = valueParsers[item.type];
-						value = parse && parse(item.str);
+					let parse = valueParsers[item.type];
+					if(parse){
+						if(typeof value === 'undefined'){
+							value = parse(item.str, env);
+						}
+						else{
+							value = parse(value, env);
+						}
 					}
 					stack.push(value);
 					break;
 				}
 				case 'variable':{
-					let value = getVariable(item.name);
+					let value = getVariable(item.name, env, item);
 					stack.push(value);
 					break;
 				}
@@ -28,7 +32,7 @@ function createMashine(commands, getVariable, valueParsers={}){
 					}
 					let value;
 					try{
-						value = fun(...args);
+						value = fun(...args, env);
 					}
 					catch(e){
 						let ne = new Error(`Error in ${funname}(${JSON.stringify(args)})`);
@@ -50,7 +54,7 @@ function createMashine(commands, getVariable, valueParsers={}){
 					}
 					let value;
 					try{
-						value = fun(...args);
+						value = fun(...args, env);
 					}
 					catch(e){
 						let ne = new Error(`Error in ${funname}(${JSON.stringify(args)})`);

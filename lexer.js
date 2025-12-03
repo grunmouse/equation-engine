@@ -1,10 +1,13 @@
 function doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, functions){
 	return function equationLexer(str){
 		
-		const reLex = new RegExp(lexPattern, 'g');
+		const reLex = new RegExp(lexPattern + '|\\s+', 'g');
 		const isValue = new RegExp('^(?:'+ valuesPattern + ')$');
 		
-		let tokens = str.split(/\s+/).map((s)=>(s.match(reLex))).flat();
+		//let tokens = str.split(/\s+/).map((s)=>(s.match(reLex))).flat();
+		let tokens = str.match(reLex);
+		
+		tokens = tokens.filter(a=>(a.trim().length));
 		
 		let operand = false;
 		for(let i=0; i<tokens.length; ++i){
@@ -18,9 +21,15 @@ function doCreateLexer(lexPattern, valuesPattern, isName, values, operHandle, fu
 					if(found && found[0] === token){
 						type = t;
 						value = fun && fun(token);
+						break;
 					}
 				}
-				tokens[i] = {token:'literal', str:token, value, type};
+				if(value && value.token == 'variable'){
+					tokens[i] = value;
+				}
+				else{
+					tokens[i] = {token:'literal', str:token, value, type};
+				}
 				operand=true;
 			}
 			else if(isName.test(token)){
@@ -108,10 +117,15 @@ function ensureOperators(operators){
 		}
 		oper.token = "operator";
 		if(!oper.arity){
-			oper.arity = 2;
+			if(['prefix', 'postfix'].includes(oper.fix)){
+				oper.arity = 1;
+			}
+			else{
+				oper.arity = 2;
+			}
 		}
 		if(!oper.fix){
-			oper.fix = 'infix';
+			oper.fix = ['', 'prefix', 'infix'][oper.arity];
 		}
 	}
 	

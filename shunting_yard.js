@@ -11,7 +11,12 @@ function shuntingYard(tokens){
 			output.push(token);
 		}
 		else if(token.token === "function"){
-			stack.push(token);
+			if(token.arity === 0){
+				output.push(token);
+			}
+			else{
+				stack.push(token);
+			}
 		}
 		else if(token.token === "operator"){
 			while(stack.top().token === "operator"){
