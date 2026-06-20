@@ -8,10 +8,10 @@ function createMashine(commands, getVariable, valueParsers={}){
 					let parse = valueParsers[item.type];
 					if(parse){
 						if(typeof value === 'undefined'){
-							value = parse(item.str, env);
+							value = parse(item.str, env, item);
 						}
 						else{
-							value = parse(value, env);
+							value = parse(value, env, item);
 						}
 					}
 					stack.push(value);
